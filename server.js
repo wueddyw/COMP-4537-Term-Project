@@ -24,17 +24,17 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 })
 
-app.get('/API/v1/loadtweets', (req, res) => {
-  addRequest('/API/v1/loadtweets')
+app.get('/API/V1/loadtweets', (req, res) => {
+  addRequest('/API/V1/loadtweets')
   res.end("Loading tweet")
 })
 
-app.post('/API/v1/login', (req, res) => {
-  addRequest('/API/v1/login')
+app.post('/API/V1/login', (req, res) => {
+  addRequest('/API/V1/login')
   res.end("Logging in")
 })
 
-app.get('/API/v1/getStats', (req, res) => {
+app.get('/API/V1/getStats', (req, res) => {
   res.writeHead(200, { 
     'Content-type': 'text/html',
     'Access-Control-Allow-Origin': '*'
