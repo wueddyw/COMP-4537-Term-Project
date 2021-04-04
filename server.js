@@ -1,6 +1,7 @@
 const express = require('express')
 const http = require('http')
 const mysql = require('mysql')
+const cors = require('cors')
 const app = express()
 const router = express.Router();
 const port = process.env.PORT || 3000
@@ -12,7 +13,7 @@ const con = mysql.createPool({
   database: 'heroku_8efe97cb5d411b8'
 });
 
-
+app.use(cors())
 app.use(express.static('public'))
 app.use('/css', express.static(__dirname + 'public/css'))
 app.use('/js', express.static(__dirname + 'public/js'))
