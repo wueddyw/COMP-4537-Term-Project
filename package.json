@@ -1,0 +1,24 @@
+{
+  "name": "comp-4537-term-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wueddyw/COMP-4537-Term-Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wueddyw/COMP-4537-Term-Project/issues"
+  },
+  "homepage": "https://github.com/wueddyw/COMP-4537-Term-Project#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  }
+}
