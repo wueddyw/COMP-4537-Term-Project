@@ -85,16 +85,18 @@ app.post('/API/V1/createquack', (req, res) => {
     if(error) {
       console.log("error")
     } else if(results[0] === undefined){
-      res.status(201)
+      res.status(400)
       res.end("Invalid data")
     }
     else {
       if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
         con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
           if(error) throw error;
+          res.status(201)
           res.end("Creating quack")
         })
       } else{
+        res.status(400)
         res.end("Invalid data")
       }
     }
