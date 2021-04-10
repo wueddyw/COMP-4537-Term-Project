@@ -63,7 +63,7 @@ app.post('/API/V1/validsession', (req, res) => {
 })
 
 app.post('/API/V1/createcomment', (req, res) => {
-  let data = JSON.parse(req.body)
+  let data = req.body
   addRequest('/API/V1/createcomment')
   if(typeof data.username !=='undefined' && typeof data.content !=='undefined' && typeof data.quackid !== 'undefined'){
     con.query('INSERT INTO comment (username,comment) VALUES ("'+ data.username+'","'+ data.comment +'")', function(error,results,fields){
@@ -79,7 +79,7 @@ app.post('/API/V1/createcomment', (req, res) => {
 })
 
 app.post('/API/V1/createquack', (req, res) => {
-  let data = JSON.parse(req.body)
+  let data = req.body
   addRequest('/API/V1/createquack')
   if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
     con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
@@ -92,13 +92,13 @@ app.post('/API/V1/createquack', (req, res) => {
 })
 
 app.delete('/API/V1/deletecomment', (req, res) => {
-  let data = JSON.parse(req.body)
+  let data = req.body
   addRequest('/API/V1/deletecomment')
   res.end("Deleting comment")
 })
 
 app.delete('/API/V1/deletequack', (req, res) => {
-  let data = JSON.parse(req.body)
+  let data = req.body
   addRequest('/API/V1/deletequack')
   if(typeof data.quackid !=='undefined')
   {
@@ -123,7 +123,7 @@ app.delete('/API/V1/deletequack', (req, res) => {
 })
 
 app.put('/API/V1/editcomment', (req, res) => {
-  let data = JSON.parse(req.body)
+  let data = req.body
   addRequest('/API/V1/editcomment')
   if(typeof data.commentid !== 'undefined' && typeof data.comment !== 'undefined'){
   con.query('UPDATE comment SET comment ="'+data.comment+'" WHERE id='+ data.commentid, function(error,results,fields){
@@ -136,7 +136,7 @@ app.put('/API/V1/editcomment', (req, res) => {
 })
 
 app.put('/API/V1/editquack', (req, res) => {
-  let data = JSON.parse(req.body)
+  let data = req.body
   addRequest('/API/V1/editcomment')
   if(typeof data.quackID !== 'undefined' && typeof data.content !== 'undefined'){
   con.query('UPDATE quack SET content ="'+data.Content+'" WHERE id='+ data.quackid, function(error,results,fields){

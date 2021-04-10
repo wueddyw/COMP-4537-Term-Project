@@ -57,3 +57,4 @@ CREATE TABLE QuackComment
   FOREIGN KEY (QuackID) REFERENCES Quack(QuackID),
   FOREIGN KEY (CommentID) REFERENCES Comment(CommentID)
 );
+insert into User(username,firstname,lastname,email,password) values ("bob", "bob", "bob", "bob@gmail.com", "123");
