@@ -81,14 +81,23 @@ app.post('/API/V1/createcomment', (req, res) => {
 app.post('/API/V1/createquack', (req, res) => {
   let data = req.body
   addRequest('/API/V1/createquack')
-  if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
-    con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
-      if(error) throw error;
-      res.end("Creating quack")
-    })
-  } else{
-    res.end("Invalid data")
-  }
+  con.query('Select * from user where username = "'+  data.username + '"', function(error,results,fields){
+    if(error) {
+      console.log("error")
+    } else if(results[0] === undefined){
+      res.end("Invalid data")
+    }
+    else {
+      if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
+        con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
+          if(error) throw error;
+          res.end("Creating quack")
+        })
+      } else{
+        res.end("Invalid data")
+      }
+    }
+  })
 })
 
 app.delete('/API/V1/deletecomment', (req, res) => {
@@ -102,13 +111,13 @@ app.delete('/API/V1/deletequack', (req, res) => {
   addRequest('/API/V1/deletequack')
   if(typeof data.quackid !=='undefined')
   {
-    con.query('DELETE from quackcomment where id = '+ data.quackid, function(error,results,fields){
+    con.query('DELETE from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
     })
-    con.query('Select * from quackcomment where id = '+ data.quackid, function(error,results,fields){
+    con.query('Select * from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
       for(i = 0; i < results.length(); i++){
-        con.query('DELETE from comment where id = '+ results.commentid, function(error,results,fields){
+        con.query('DELETE from comment where commentid = '+ results.commentid, function(error,results,fields){
           if(error) throw error;
         })
       }
@@ -126,7 +135,7 @@ app.put('/API/V1/editcomment', (req, res) => {
   let data = req.body
   addRequest('/API/V1/editcomment')
   if(typeof data.commentid !== 'undefined' && typeof data.comment !== 'undefined'){
-  con.query('UPDATE comment SET comment ="'+data.comment+'" WHERE id='+ data.commentid, function(error,results,fields){
+  con.query('UPDATE comment SET comment ="'+data.comment+'" WHERE commentid='+ data.commentid, function(error,results,fields){
       if(error) throw error;
       res.end("Editing comment")
     })
@@ -139,7 +148,7 @@ app.put('/API/V1/editquack', (req, res) => {
   let data = req.body
   addRequest('/API/V1/editcomment')
   if(typeof data.quackID !== 'undefined' && typeof data.content !== 'undefined'){
-  con.query('UPDATE quack SET content ="'+data.Content+'" WHERE id='+ data.quackid, function(error,results,fields){
+  con.query('UPDATE quack SET content ="'+data.Content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
       if(error) throw error;
       res.end("Editing comment")
     })
@@ -148,12 +157,14 @@ app.put('/API/V1/editquack', (req, res) => {
   }
 })
 
-app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}`)
-})
 
 function addRequest(endpoint){
   con.query('update EndpointCounter set requests = requests + 1 where endpoint = "'+ endpoint + '"', function(error,results,fields){
       console.log(results);
   })
 }
+
+app.listen(port, () => {
+  console.log(`Listening at http://localhost:${port}`)
+})
+

@@ -16,10 +16,10 @@ insert into endpointcounter(method,endpoint,requests) values ("DELETE", "/API/V1
 insert into endpointcounter(method,endpoint,requests) values ("PUT", "/API/V1/editcomment", 0);
 insert into endpointcounter(method,endpoint,requests) values ("PUT", "/API/V1/editquack", 0);
 select * from endpointcounter;
-drop table user;
+drop table quackcomment;
 drop table quack;
 drop table comment;
-drop table quackcomment;
+drop table user;
 CREATE TABLE User
 (
   username varchar(20) NOT NULL,
