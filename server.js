@@ -85,6 +85,7 @@ app.post('/API/V1/createquack', (req, res) => {
     if(error) {
       console.log("error")
     } else if(results[0] === undefined){
+      res.status(201)
       res.end("Invalid data")
     }
     else {
