@@ -1,0 +1,59 @@
+drop table endpointcounter;
+create table endpointcounter 
+( method varchar(10),
+endpoint varchar(50),
+requests int);
+insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/register", 0);
+insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/login", 0);
+insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/createcomment", 0);
+insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/createquack", 0);
+insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/validsession", 0);
+insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/loadquack", 0);
+insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/loadcomment", 0);
+insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/validsession", 0);
+insert into endpointcounter(method,endpoint,requests) values ("DELETE", "/API/V1/deletecomment", 0);
+insert into endpointcounter(method,endpoint,requests) values ("DELETE", "/API/V1/deletequack", 0);
+insert into endpointcounter(method,endpoint,requests) values ("PUT", "/API/V1/editcomment", 0);
+insert into endpointcounter(method,endpoint,requests) values ("PUT", "/API/V1/editquack", 0);
+select * from endpointcounter;
+drop table user;
+drop table quack;
+drop table comment;
+drop table quackcomment;
+CREATE TABLE User
+(
+  username varchar(20) NOT NULL,
+  firstname varchar(20) NOT NULL,
+  lastname varchar(20) NOT NULL,
+  email varchar(30) NOT NULL,
+  password varchar(20) NOT NULL,
+  PRIMARY KEY (username)
+);
+
+CREATE TABLE Quack
+(
+  QuackID int NOT NULL AUTO_INCREMENT,
+  username varchar(20) NOT NULL,
+  Content varchar(255) NOT NULL,
+  PRIMARY KEY (QuackID),
+  FOREIGN KEY (username) REFERENCES User(username)
+);
+
+CREATE TABLE Comment
+(
+  CommentID int NOT NULL AUTO_INCREMENT,
+  username varchar(20) NOT NULL,
+  Comment varchar(255) NOT NULL,
+  PRIMARY KEY (CommentID),
+  FOREIGN KEY (username) REFERENCES User(username)
+);
+
+CREATE TABLE QuackComment
+(
+  QCID int NOT NULL AUTO_INCREMENT,
+  QuackID int NOT NULL,
+  CommentID int NOT NULL,
+  PRIMARY KEY (QCID),
+  FOREIGN KEY (QuackID) REFERENCES Quack(QuackID),
+  FOREIGN KEY (CommentID) REFERENCES Comment(CommentID)
+);
