@@ -20,13 +20,14 @@ drop table quackcomment;
 drop table quack;
 drop table comment;
 drop table user;
+drop table tokens;
 CREATE TABLE User
 (
   username varchar(20) NOT NULL,
   firstname varchar(20) NOT NULL,
   lastname varchar(20) NOT NULL,
   email varchar(30) NOT NULL,
-  password varchar(20) NOT NULL,
+  password varchar(100) NOT NULL,
   PRIMARY KEY (username)
 );
 
@@ -57,4 +58,9 @@ CREATE TABLE QuackComment
   FOREIGN KEY (QuackID) REFERENCES Quack(QuackID),
   FOREIGN KEY (CommentID) REFERENCES Comment(CommentID)
 );
+
+create table tokens(
+	token varchar(200)
+);
+
 insert into User(username,firstname,lastname,email,password) values ("bob", "bob", "bob", "bob@gmail.com", "123");

@@ -1,8 +1,11 @@
+require('dotenv').config();
 const express = require('express')
 const http = require('http')
 const mysql = require('mysql')
 const cors = require('cors')
 const e = require('express')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 const app = express()
 const router = express.Router();
 const port = process.env.PORT || 3000
@@ -69,14 +72,94 @@ app.get('/API/V1/getStats', (req, res) => {
   })
 })
 
+app.post('/API/V1/validsession', (req,res) => {
+  const refreshToken = req.body.token
+  if(refreshToken == null) return res.sendStatus(401)
+  con.query('Select * from tokens where token = "'+  refreshToken + '"', function(error,results,fields){
+    if(error) {
+      console.log("error")
+    } else if(results[0] === undefined){
+      res.sendStatus(403)
+    } else{
+       jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+         if (err) return res.sendStatus(403)
+         const accessToken = generateAccessToken({username : user.username})
+         res.json({accessToken : accessToken})
+       })
+    }
+  })
+})
+
 app.post('/API/V1/login', (req, res) => {
+  let data = req.body
   addRequest('/API/V1/login')
-  res.end("Logging in")
+  con.query('Select * from user where username = "'+  data.username + '"', function(error,results,fields){
+    if(error) {
+      console.log("error")
+    } else if(results[0] === undefined){
+      res.end("Your username or password doesn't exist or it was invalid")
+    } else{
+        console.log(bcrypt.compareSync(data.password, results[0].password));
+        if(bcrypt.compareSync(data.password, results[0].password)){
+          const user = { username: data.username}
+          const accessToken = generateAccessToken(user)
+          const refreshToken = jwt.sign(user,process.env.REFRESH_TOKEN_SECRET)
+          con.query('INSERT INTO tokens (token) VALUES ("'+ refreshToken+ '")', function(error,results,fields){
+            if(error) console.log(error);
+            res.status(200)
+            res.json({accessToken: accessToken, refreshToken: refreshToken})
+          })
+        } else{
+          res.status(401)
+          res.end("Your username or password doesn't exist or it was invalid")
+        }
+      }
+  })
+})
+
+app.delete('/API/V1/logout', (req,res) => {
+  con.query('DELETE from tokens where token = "'+ req.body.token+'"', function(error,results,fields){
+    if(error) {
+      console.log(error);
+    } else{
+      res.sendStatus(204);
+    }
+  })
 })
 
 app.post('/API/V1/register', (req, res) => {
+  let data = req.body
   addRequest('/API/V1/register')
-  res.end("Registering user")
+  con.query('Select * from user where username = "'+  data.username + '"', function(error,results,fields){
+    if(error) {
+      console.log("error")
+    } else if(results[0] === undefined){
+      con.query('Select * from user where email = "'+  data.email + '"', function(error,resultss,fields){
+        if(error) {
+          console.log("error")
+        } else if(resultss[0] === undefined){
+          if(typeof data.username !=='undefined' && typeof data.email !=='undefined' && typeof data.firstname !== 'undefined' && typeof data.lastname !== 'undefined'
+          && typeof data.password !== 'undefined'){
+            
+            con.query('INSERT INTO user (username,firstname,lastname,email,password) VALUES ("'+ data.username+'","'+ data.firstname +'","'
+            + data.lastname +'","'+ data.email +'", "'+ bcrypt.hashSync(req.body.password,bcrypt.genSaltSync(10),null) +'")', function(error,results,fields){
+              if(error) console.log("error");
+              res.status(201)
+              res.end("Created user")
+            })
+        } else{
+          res.status(400)
+          res.end("Invalid data")
+        }
+      }else{
+        res.status(400)
+        res.end("Email already exists")
+      }
+    })}else{
+      res.status(400)
+      res.end("User name already exists")
+    }
+  })
 })
 
 app.post('/API/V1/validsession', (req, res) => {
@@ -149,6 +232,25 @@ app.post('/API/V1/createquack', (req, res) => {
 app.delete('/API/V1/deletecomment', (req, res) => {
   let data = req.body
   addRequest('/API/V1/deletecomment')
+  if(typeof data.quackid !=='undefined'){
+    con.query('DELETE from quackcomment where quackid = '+ data.commentid, function(error,results,fields){
+      if(error) {
+        console.log(error);
+        sendStatus(400)
+      }else{
+        con.query('DELETE from comment where commentid = '+ data.commentid, function(error,results,fields){
+          if(error) {
+            console.log(error);
+            sendStatus(400)
+          } else{
+            sendStatus(204)
+          }
+        })
+      }
+    })
+  }else{
+    sendStatus(400);
+  }
   res.end("Deleting comment")
 })
 
@@ -208,6 +310,10 @@ function addRequest(endpoint){
   con.query('update EndpointCounter set requests = requests + 1 where endpoint = "'+ endpoint + '"', function(error,results,fields){
       console.log(results);
   })
+}
+
+function generateAccessToken(user){
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '500s'})
 }
 
 app.listen(port, () => {
