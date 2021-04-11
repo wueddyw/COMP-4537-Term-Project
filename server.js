@@ -27,12 +27,34 @@ app.get('/', (req, res) => {
 
 app.get('/API/V1/loadquacks', (req, res) => {
   addRequest('/API/V1/loadquacks')
-  res.end("Loading quack")
+  con.query('Select * from quack', function(error,results,fields){
+    if(error) console.log(error);
+    if(results[0] == undefined){
+      res.status(400)
+      res.end("Empty there are no quacks")
+    } else{
+      res.status(200)
+      res.json(results)
+    }
+  })
 })
 
 app.get('/API/V1/loadcomments', (req, res) => {
   addRequest('/API/V1/comments')
-  res.end("Loading comments")
+  con.query('Select c.username, c.comment '+
+    'FROM Quack q '+
+    'INNER JOIN QuackComment qc ON q.quackid = qc.quackid '+ 
+    'INNER JOIN Comment c ON qc.commentid = c.commentid '+
+    'WHERE q.quackid = "' + req.body.quackid + '"', function(error,results,fields){
+    if(error) console.log(error);
+    if(results[0] == undefined){
+      res.status(400)
+      res.end("Empty there are no comments")
+    } else{
+      res.status(200)
+      res.json(results)
+    }
+  })
 })
 
 app.get('/API/V1/getStats', (req, res) => {
@@ -65,17 +87,38 @@ app.post('/API/V1/validsession', (req, res) => {
 app.post('/API/V1/createcomment', (req, res) => {
   let data = req.body
   addRequest('/API/V1/createcomment')
-  if(typeof data.username !=='undefined' && typeof data.content !=='undefined' && typeof data.quackid !== 'undefined'){
-    con.query('INSERT INTO comment (username,comment) VALUES ("'+ data.username+'","'+ data.comment +'")', function(error,results,fields){
-      if(error) throw error;
-      con.query('INSERT INTO quotecomment (quackid,commentid) VALUES ("'+ results[0].quackid+'","'+ results[0].commentid +'")', function(error,results,fields){
-        if(error) throw error;
-        res.end("Creating comment")
+  con.query('Select * from user where username = "'+  data.username + '"', function(error,results,fields){
+    if(error) {
+      console.log("error")
+    } else if(results[0] === undefined){
+      res.status(400)
+      res.end("Invalid data")
+    }else{
+      con.query('Select * from quack where QuackID = "'+  data.quackid + '"', function(error,results,fields){
+        if(error) {
+          console.log("error")
+        } else if(results[0] === undefined){
+          res.status(400)
+          res.end("Invalid data")
+        } else{
+          if(typeof data.username !=='undefined' && typeof data.comment !=='undefined' && typeof data.quackid !== 'undefined'){
+            con.query('INSERT INTO comment (username,comment) VALUES ("'+ data.username+'","'+ data.comment +'")', function(error,results,fields){
+              if(error) throw error;
+              console.log(results);
+              con.query('INSERT INTO quackcomment (quackid,commentid) VALUES ("'+ data.quackid+'","'+ results.insertId +'")', function(error,results,fields){
+                if(error) throw error;
+                res.status(201)
+                res.end("Creating comment")
+              })
+            })
+          }else{
+            res.status(400)
+            res.end("Invalid data")
+          }
+        }
       })
-    })
-  }else{
-    res.end("Invalid data")
-  }
+    }
+  })
 })
 
 app.post('/API/V1/createquack', (req, res) => {
