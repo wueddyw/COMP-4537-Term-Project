@@ -162,11 +162,6 @@ app.post('/API/V1/register', (req, res) => {
   })
 })
 
-app.post('/API/V1/validsession', (req, res) => {
-  addRequest('/API/V1/validsession')
-  res.end("Validating session")
-})
-
 app.post('/API/V1/createcomment', (req, res) => {
   let data = req.body
   addRequest('/API/V1/createcomment')
@@ -272,9 +267,11 @@ app.delete('/API/V1/deletequack', (req, res) => {
     })
     con.query('DELETE from quack where id = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
+      res.status(204)
       res.end("Deleting quack")
     })
   }else{
+    res.status(400)
     res.end("Invalid quack")
   }
 })
@@ -285,22 +282,26 @@ app.put('/API/V1/editcomment', (req, res) => {
   if(typeof data.commentid !== 'undefined' && typeof data.comment !== 'undefined'){
   con.query('UPDATE comment SET comment ="'+data.comment+'" WHERE commentid='+ data.commentid, function(error,results,fields){
       if(error) throw error;
+      res.status(200)
       res.end("Editing comment")
     })
   } else{
+    res.status(400)
     res.end("Invalid data")
   }
 })
 
 app.put('/API/V1/editquack', (req, res) => {
   let data = req.body
-  addRequest('/API/V1/editcomment')
-  if(typeof data.quackID !== 'undefined' && typeof data.content !== 'undefined'){
-  con.query('UPDATE quack SET content ="'+data.Content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
+  addRequest('/API/V1/editquack')
+  if(typeof data.quackid !== 'undefined' && typeof data.content !== 'undefined'){
+  con.query('UPDATE quack SET content ="'+data.content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
       if(error) throw error;
-      res.end("Editing comment")
+      res.status(200)
+      res.end("Editing quack")
     })
   } else{
+    res.status(400)
     res.end("Invalid data")
   }
 })
@@ -313,7 +314,7 @@ function addRequest(endpoint){
 }
 
 function generateAccessToken(user){
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '500s'})
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '300s'})
 }
 
 app.listen(port, () => {
