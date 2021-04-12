@@ -108,7 +108,7 @@ app.post('/API/V1/login', (req, res) => {
             if(error) console.log(error);
             let newDate = new Date();
             let expDate = newDate.setMinutes(newDate.getMinutes() +5)
-            res.cookie('id', accessToken , refreshToken, { sameSite: true, maxAge: expDate })
+            res.cookie('id', accessToken, { sameSite: true, maxAge: expDate })
             res.status(200)
             res.json({success: true})
           })
