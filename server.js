@@ -101,7 +101,7 @@ app.post('/API/V1/login', (req, res) => {
     } else{
         console.log(bcrypt.compareSync(data.password, results[0].password));
         if(bcrypt.compareSync(data.password, results[0].password)){
-          const user = { username: data.username ,'access': 'authenticated'}
+          const user = { username: data.username ,'access': 'authenticated', 'device': req.body.device, 'agent':req.body.agent}
           const accessToken = generateAccessToken(user)
           const refreshToken = jwt.sign(user,process.env.REFRESH_TOKEN_SECRET)
           con.query('INSERT INTO tokens (token) VALUES ("'+ refreshToken+ '")', function(error,results,fields){
