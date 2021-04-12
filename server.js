@@ -80,7 +80,7 @@ app.post('/API/V1/validsession', (req,res) => {
        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
          if (err) return res.sendStatus(403)
          const accessToken = generateAccessToken({username : user.username})
-         res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+        //  res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
          res.json({accessToken : accessToken})
        })
     }
@@ -103,7 +103,7 @@ app.post('/API/V1/login', (req, res) => {
           const refreshToken = jwt.sign(user,process.env.REFRESH_TOKEN_SECRET)
           con.query('INSERT INTO tokens (token) VALUES ("'+ refreshToken+ '")', function(error,results,fields){
             if(error) console.log(error);
-            res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+            // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
             res.status(200)
             res.json({accessToken: accessToken, refreshToken: refreshToken})
           })
@@ -120,7 +120,7 @@ app.delete('/API/V1/logout', (req,res) => {
     if(error) {
       console.log(error);
     } else{
-      res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+      // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.sendStatus(204);
     }
   })
@@ -142,7 +142,7 @@ app.post('/API/V1/register', (req, res) => {
             con.query('INSERT INTO user (username,firstname,lastname,email,password) VALUES ("'+ data.username+'","'+ data.firstname +'","'
             + data.lastname +'","'+ data.email +'", "'+ bcrypt.hashSync(req.body.password,bcrypt.genSaltSync(10),null) +'")', function(error,results,fields){
               if(error) console.log("error");
-              res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+              // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
               res.status(201)
               res.end("Created user")
             })
@@ -184,7 +184,7 @@ app.post('/API/V1/createcomment', authenticateToken,(req, res) => {
               console.log(results);
               con.query('INSERT INTO quackcomment (quackid,commentid) VALUES ("'+ data.quackid+'","'+ results.insertId +'")', function(error,results,fields){
                 if(error) throw error;
-                res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+                // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
                 res.status(201)
                 res.end("Creating comment")
               })
@@ -213,7 +213,7 @@ app.post('/API/V1/createquack', authenticateToken,(req, res) => {
       if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
         con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
           if(error) throw error;
-          res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+          // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
           res.status(201)
           res.end("Creating quack")
         })
@@ -239,7 +239,7 @@ app.delete('/API/V1/deletecomment',authenticateToken, (req, res) => {
             console.log(error);
             sendStatus(400)
           } else{
-            res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+            // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
             sendStatus(204)
             res.end("Deleted comment")
           }
@@ -270,7 +270,7 @@ app.delete('/API/V1/deletequack', authenticateToken,(req, res) => {
     })
     con.query('DELETE from quack where id = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
-      res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+      // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(204)
       res.end("Deleting quack")
     })
@@ -286,7 +286,7 @@ app.put('/API/V1/editcomment', authenticateToken,(req, res) => {
   if(typeof data.commentid !== 'undefined' && typeof data.comment !== 'undefined'){
   con.query('UPDATE comment SET comment ="'+data.comment+'" WHERE commentid='+ data.commentid, function(error,results,fields){
       if(error) throw error;
-      res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+      // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(200)
       res.end("Editing comment")
     })
@@ -302,7 +302,7 @@ app.put('/API/V1/editquack', authenticateToken,(req, res) => {
   if(typeof data.quackid !== 'undefined' && typeof data.content !== 'undefined'){
   con.query('UPDATE quack SET content ="'+data.content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
       if(error) throw error;
-      res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+      // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(200)
       res.end("Editing quack")
     })
