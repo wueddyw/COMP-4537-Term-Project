@@ -36,10 +36,6 @@ app.get('/API/V1/loadquacks',authenticateToken ,(req, res) => {
       res.status(400)
       res.end("Empty there are no quacks")
     } else{
-      res.writeHead(200, {
-        "Access-Control-Allow-Origin": "https://comp4537-termproject-client.herokuapp.com/",
-        "Access-Control-Allow-Methods": "GET"
-      })
       res.json(results)
     }
   })
