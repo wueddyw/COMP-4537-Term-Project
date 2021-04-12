@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 })
 
-app.get('/API/V1/loadquacks', (req, res) => {
+app.get('/API/V1/loadquacks',authenticateToken ,(req, res) => {
   addRequest('/API/V1/loadquacks')
   con.query('Select * from quack', function(error,results,fields){
     if(error) console.log(error);
@@ -36,13 +36,16 @@ app.get('/API/V1/loadquacks', (req, res) => {
       res.status(400)
       res.end("Empty there are no quacks")
     } else{
-      res.status(200)
+      res.writeHead(200, {
+        "Access-Control-Allow-Origin": "https://comp4537-termproject-client.herokuapp.com/",
+        "Access-Control-Allow-Methods": "GET"
+      })
       res.json(results)
     }
   })
 })
 
-app.get('/API/V1/loadcomments', (req, res) => {
+app.get('/API/V1/loadcomments',authenticateToken, (req, res) => {
   addRequest('/API/V1/comments')
   con.query('Select c.username, c.comment '+
     'FROM Quack q '+
@@ -60,7 +63,7 @@ app.get('/API/V1/loadcomments', (req, res) => {
   })
 })
 
-app.get('/API/V1/getStats', (req, res) => {
+app.get('/API/V1/getStats', authenticateToken,(req, res) => {
   res.writeHead(200, { 
     'Content-type': 'text/html',
     'Access-Control-Allow-Origin': '*'
@@ -101,16 +104,13 @@ app.post('/API/V1/login', (req, res) => {
     } else{
         console.log(bcrypt.compareSync(data.password, results[0].password));
         if(bcrypt.compareSync(data.password, results[0].password)){
-          const user = { username: data.username ,'access': 'authenticated', 'device': req.body.device, 'agent':req.body.agent}
+          const user = { username: data.username}
           const accessToken = generateAccessToken(user)
           const refreshToken = jwt.sign(user,process.env.REFRESH_TOKEN_SECRET)
           con.query('INSERT INTO tokens (token) VALUES ("'+ refreshToken+ '")', function(error,results,fields){
             if(error) console.log(error);
-            let newDate = new Date();
-            let expDate = newDate.setMinutes(newDate.getMinutes() +5)
-            res.cookie('id', accessToken, { sameSite: true, maxAge: expDate })
             res.status(200)
-            res.json({success: true})
+            res.json({accessToken: accessToken, refreshToken: refreshToken})
           })
         } else{
           res.status(401)
@@ -165,7 +165,7 @@ app.post('/API/V1/register', (req, res) => {
   })
 })
 
-app.post('/API/V1/createcomment', (req, res) => {
+app.post('/API/V1/createcomment', authenticateToken,(req, res) => {
   let data = req.body
   addRequest('/API/V1/createcomment')
   con.query('Select * from user where username = "'+  data.username + '"', function(error,results,fields){
@@ -202,7 +202,7 @@ app.post('/API/V1/createcomment', (req, res) => {
   })
 })
 
-app.post('/API/V1/createquack', (req, res) => {
+app.post('/API/V1/createquack', authenticateToken,(req, res) => {
   let data = req.body
   addRequest('/API/V1/createquack')
   con.query('Select * from user where username = "'+  data.username + '"', function(error,results,fields){
@@ -227,7 +227,7 @@ app.post('/API/V1/createquack', (req, res) => {
   })
 })
 
-app.delete('/API/V1/deletecomment', (req, res) => {
+app.delete('/API/V1/deletecomment',authenticateToken, (req, res) => {
   let data = req.body
   addRequest('/API/V1/deletecomment')
   if(typeof data.quackid !=='undefined'){
@@ -252,7 +252,7 @@ app.delete('/API/V1/deletecomment', (req, res) => {
   res.end("Deleting comment")
 })
 
-app.delete('/API/V1/deletequack', (req, res) => {
+app.delete('/API/V1/deletequack', authenticateToken,(req, res) => {
   let data = req.body
   addRequest('/API/V1/deletequack')
   if(typeof data.quackid !=='undefined')
@@ -279,7 +279,7 @@ app.delete('/API/V1/deletequack', (req, res) => {
   }
 })
 
-app.put('/API/V1/editcomment', (req, res) => {
+app.put('/API/V1/editcomment', authenticateToken,(req, res) => {
   let data = req.body
   addRequest('/API/V1/editcomment')
   if(typeof data.commentid !== 'undefined' && typeof data.comment !== 'undefined'){
@@ -294,7 +294,7 @@ app.put('/API/V1/editcomment', (req, res) => {
   }
 })
 
-app.put('/API/V1/editquack', (req, res) => {
+app.put('/API/V1/editquack', authenticateToken,(req, res) => {
   let data = req.body
   addRequest('/API/V1/editquack')
   if(typeof data.quackid !== 'undefined' && typeof data.content !== 'undefined'){
@@ -318,6 +318,20 @@ function addRequest(endpoint){
 
 function generateAccessToken(user){
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '300s'})
+}
+
+function authenticateToken(req,res,next) {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  if (token == null) return res.sendStatus(401);
+  
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err,user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    console.log(user.username);
+    username = user.username
+    next();
+  });
 }
 
 app.listen(port, () => {
