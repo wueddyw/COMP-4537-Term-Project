@@ -48,7 +48,7 @@ app.get('/API/V1/loadcomments', (req, res) => {
     'FROM Quack q '+
     'INNER JOIN QuackComment qc ON q.quackid = qc.quackid '+ 
     'INNER JOIN Comment c ON qc.commentid = c.commentid '+
-    'WHERE q.quackid = "' + req.body.quackid + '"', function(error,results,fields){
+    'WHERE q.quackid = "' + req.query.quackid + '"', function(error,results,fields){
     if(error) console.log(error);
     if(results[0] == undefined){
       res.status(400)
