@@ -101,13 +101,16 @@ app.post('/API/V1/login', (req, res) => {
     } else{
         console.log(bcrypt.compareSync(data.password, results[0].password));
         if(bcrypt.compareSync(data.password, results[0].password)){
-          const user = { username: data.username}
+          const user = { username: data.username ,'access': 'authenticated'}
           const accessToken = generateAccessToken(user)
           const refreshToken = jwt.sign(user,process.env.REFRESH_TOKEN_SECRET)
           con.query('INSERT INTO tokens (token) VALUES ("'+ refreshToken+ '")', function(error,results,fields){
             if(error) console.log(error);
+            let newDate = new Date();
+            let expDate = newDate.setMinutes(newDate.getMinutes() +5)
+            res.cookie('id', accessToken , refreshToken, { sameSite: true, maxAge: expDate })
             res.status(200)
-            res.json({accessToken: accessToken, refreshToken: refreshToken})
+            res.json({success: true})
           })
         } else{
           res.status(401)
