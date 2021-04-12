@@ -229,7 +229,7 @@ app.delete('/API/V1/deletecomment',authenticateToken, (req, res) => {
   let data = req.body
   addRequest('/API/V1/deletecomment')
   if(typeof data.quackid !=='undefined'){
-    con.query('DELETE from quackcomment where quackid = '+ data.commentid, function(error,results,fields){
+    con.query('DELETE from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
       if(error) {
         console.log(error);
         sendStatus(400)
