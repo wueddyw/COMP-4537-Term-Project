@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express')
 const http = require('http')
 const mysql = require('mysql')
-
+const cors = require('cors')
 const e = require('express')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
@@ -17,7 +17,7 @@ const con = mysql.createPool({
   database: 'heroku_8efe97cb5d411b8'
 });
 
-
+app.use(cors())
 app.use(express.static('public'))
 app.use('/css', express.static(__dirname + 'public/css'))
 app.use('/js', express.static(__dirname + 'public/js'))
