@@ -228,7 +228,7 @@ app.post('/API/V1/createquack', authenticateToken,(req, res) => {
 app.delete('/API/V1/deletecomment',authenticateToken, (req, res) => {
   let data = req.body
   addRequest('/API/V1/deletecomment')
-  if(typeof data.quackid !=='undefined'){
+  if(typeof data.commentid !=='undefined'){
     con.query('DELETE from quackcomment where commentid = '+ data.commentid, function(error,results,fields){
       if(error) {
         console.log(error);
@@ -257,18 +257,16 @@ app.delete('/API/V1/deletequack', authenticateToken,(req, res) => {
   addRequest('/API/V1/deletequack')
   if(typeof data.quackid !=='undefined')
   {
-    con.query('DELETE from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
-      if(error) throw error;
-    })
     con.query('Select * from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
-      for(i = 0; i < results.length(); i++){
-        con.query('DELETE from comment where commentid = '+ results.commentid, function(error,results,fields){
+      console.log(typeof results)
+      for(i = 0; i < results.length; i++){
+        con.query('DELETE from comment where commentid = '+ results[i].commentid, function(error,results,fields){
           if(error) throw error;
         })
       }
     })
-    con.query('DELETE from quack where id = '+ data.quackid, function(error,results,fields){
+    con.query('DELETE from quack where quackid = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
       // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(204)
