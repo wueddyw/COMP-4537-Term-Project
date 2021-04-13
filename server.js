@@ -254,12 +254,20 @@ app.delete('/API/V1/deletecomment',authenticateToken, (req, res) => {
 
 app.delete('/API/V1/deletequack', authenticateToken,(req, res) => {
   let data = req.body
+  let commentid;
   addRequest('/API/V1/deletequack')
   if(typeof data.quackid !=='undefined')
   {
     con.query('Select * from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
       if(error) throw error;
       console.log(typeof results)
+      commentid = results;
+      con.query('DELETE from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
+        if(error) throw error;
+        // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
+        res.status(204)
+        res.end("Deleting quack")
+      })
       for(i = 0; i < results.length; i++){
         con.query('DELETE from comment where commentid = '+ results[i].commentid, function(error,results,fields){
           if(error) throw error;
