@@ -138,7 +138,8 @@ app.post('/API/V1/register', (req, res) => {
           console.log("error")
         } else if(resultss[0] === undefined){
           if(typeof data.username !=='undefined' && typeof data.email !=='undefined' && typeof data.firstname !== 'undefined' && typeof data.lastname !== 'undefined'
-          && typeof data.password !== 'undefined'){
+          && typeof data.password !== 'undefined' && data.username !=="" && data.email !=="" && data.firstname !== "" && data.lastname !== ""
+          && data.password !== ""){
             con.query('INSERT INTO user (username,firstname,lastname,email,password) VALUES ("'+ data.username+'","'+ data.firstname +'","'
             + data.lastname +'","'+ data.email +'", "'+ bcrypt.hashSync(req.body.password,bcrypt.genSaltSync(10),null) +'")', function(error,results,fields){
               if(error) console.log("error");
@@ -178,7 +179,8 @@ app.post('/API/V1/createcomment', authenticateToken,(req, res) => {
           res.status(400)
           res.end("Invalid data")
         } else{
-          if(typeof data.username !=='undefined' && typeof data.comment !=='undefined' && typeof data.quackid !== 'undefined'){
+          if(typeof data.username !=='undefined' && typeof data.comment !=='undefined' && typeof data.quackid !== 'undefined' && 
+          data.username !=="" && data.comment !=="" && data.quackid !== ""){
             con.query('INSERT INTO comment (username,comment) VALUES ("'+ data.username+'","'+ data.comment +'")', function(error,results,fields){
               if(error) console.log(error);
               console.log(results);
@@ -210,7 +212,7 @@ app.post('/API/V1/createquack', authenticateToken,(req, res) => {
       res.end("Invalid data")
     }
     else {
-      if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
+      if(typeof data.username !=='undefined' && typeof data.content !== 'undefined' && data.username !=="" && data.content !== ""){
         con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
           if(error) console.log(error);
           // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
@@ -322,7 +324,7 @@ function addRequest(endpoint){
 }
 
 function generateAccessToken(user){
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '300s'})
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn : '900s'})
 }
 
 function authenticateToken(req,res,next) {
