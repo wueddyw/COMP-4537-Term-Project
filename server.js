@@ -43,7 +43,7 @@ app.get('/API/V1/loadquacks',authenticateToken ,(req, res) => {
 
 app.get('/API/V1/loadcomments',authenticateToken, (req, res) => {
   addRequest('/API/V1/comments')
-  con.query('Select c.username, c.comment '+
+  con.query('Select c.username, c.comment , c.commentid'+
     'FROM Quack q '+
     'INNER JOIN QuackComment qc ON q.quackid = qc.quackid '+ 
     'INNER JOIN Comment c ON qc.commentid = c.commentid '+
@@ -239,10 +239,11 @@ app.delete('/API/V1/deletecomment',authenticateToken, (req, res) => {
         con.query('DELETE from comment where commentid = '+ data.commentid, function(error,results,fields){
           if(error) {
             console.log(error);
-            sendStatus(400)
+            res.status(204)
+            res.end("DB error")
           } else{
             // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
-            sendStatus(204)
+            res.status(204)
             res.end("Deleted comment")
           }
         })
