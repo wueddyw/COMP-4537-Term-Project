@@ -60,7 +60,7 @@ app.get('/API/V1/loadcomments',authenticateToken, (req, res) => {
   })
 })
 
-app.get('/API/V1/getStats', authenticateToken,(req, res) => {
+app.get('/API/V1/getStats',(req, res) => {
   con.query('Select * from EndpointCounter', function(error,results,fields){
     res.status(200)
     console.log(typeof results);
@@ -118,6 +118,7 @@ app.post('/API/V1/login', (req, res) => {
 
 app.post('/API/V1/loginAdmin', (req, res) => {
   let data = req.body
+  console.log(data.username + " " + data.password)
   if(req.body.username !== "admin" || bcrypt.compareSync(data.password, results[0].password)){
     res.status(401)
     res.end("Your username or password doesn't exist or it was invalid")
