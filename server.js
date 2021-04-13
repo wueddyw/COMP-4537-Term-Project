@@ -118,14 +118,20 @@ app.post('/API/V1/login', (req, res) => {
 
 app.post('/API/V1/loginAdmin', (req, res) => {
   let data = req.body
-  console.log(data.username + " " + data.password)
-  if(req.body.username !== "admin" || bcrypt.compareSync(data.password, results[0].password)){
-    res.status(401)
-    res.end("Your username or password doesn't exist or it was invalid")
-  } else{
-    res.status(200)
-    res.end("Login success")
-  }
+  con.query('Select * from admin where username = "'+  data.username + '"', function(error,results,fields){
+    if(error) {
+      console.log("error")
+    } else if(results[0] === undefined){
+      res.end("Your username or password doesn't exist or it was invalid")
+    } else{
+      if(req.body.username !== "admin" || bcrypt.compareSync(data.password, results[0].password)){
+        res.status(401)
+        res.end("Your username or password doesn't exist or it was invalid")
+      } else{
+        res.status(200)
+        res.end("Login success")
+      }
+    }
 })
 
 app.delete('/API/V1/logout', (req,res) => {
