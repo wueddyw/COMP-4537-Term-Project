@@ -332,8 +332,8 @@ app.put('/API/V1/editcomment', authenticateToken,(req, res) => {
 app.put('/API/V1/editquack', authenticateToken,(req, res) => {
   let data = req.body
   addRequest('/API/V1/editquack')
-  if(typeof data.quackid !== 'undefined' && typeof data.content !== 'undefined'){
-  con.query('UPDATE quack SET content ="'+data.content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
+  if(typeof data.quackid !== 'undefined' && typeof data.Content !== 'undefined'){
+  con.query('UPDATE quack SET content ="'+data.Content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
     if(error) console.log(error);
       // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(200)
