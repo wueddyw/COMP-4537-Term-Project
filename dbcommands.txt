@@ -7,10 +7,9 @@ insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/r
 insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/login", 0);
 insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/createcomment", 0);
 insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/createquack", 0);
-insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/validsession", 0);
+insert into endpointcounter(method,endpoint,requests) values ("POST", "/API/V1/validsession", 0);
 insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/loadquack", 0);
 insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/loadcomment", 0);
-insert into endpointcounter(method,endpoint,requests) values ("GET", "/API/V1/validsession", 0);
 insert into endpointcounter(method,endpoint,requests) values ("DELETE", "/API/V1/deletecomment", 0);
 insert into endpointcounter(method,endpoint,requests) values ("DELETE", "/API/V1/deletequack", 0);
 insert into endpointcounter(method,endpoint,requests) values ("PUT", "/API/V1/editcomment", 0);
@@ -63,4 +62,4 @@ create table tokens(
 	token varchar(200)
 );
 
-insert into User(username,firstname,lastname,email,password) values ("bob", "bob", "bob", "bob@gmail.com", "123");
+
