@@ -43,7 +43,7 @@ app.get('/API/V1/loadquacks',authenticateToken ,(req, res) => {
 
 app.get('/API/V1/loadcomments',authenticateToken, (req, res) => {
   addRequest('/API/V1/comments')
-  con.query('Select c.username, c.comment , c.commentid'+
+  con.query('Select c.username, c.comment , c.commentid '+
     'FROM Quack q '+
     'INNER JOIN QuackComment qc ON q.quackid = qc.quackid '+ 
     'INNER JOIN Comment c ON qc.commentid = c.commentid '+
