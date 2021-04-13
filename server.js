@@ -180,10 +180,10 @@ app.post('/API/V1/createcomment', authenticateToken,(req, res) => {
         } else{
           if(typeof data.username !=='undefined' && typeof data.comment !=='undefined' && typeof data.quackid !== 'undefined'){
             con.query('INSERT INTO comment (username,comment) VALUES ("'+ data.username+'","'+ data.comment +'")', function(error,results,fields){
-              if(error) throw error;
+              if(error) console.log(error);
               console.log(results);
               con.query('INSERT INTO quackcomment (quackid,commentid) VALUES ("'+ data.quackid+'","'+ results.insertId +'")', function(error,results,fields){
-                if(error) throw error;
+                if(error) console.log(error);
                 // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
                 res.status(201)
                 res.end("Creating comment")
@@ -212,7 +212,7 @@ app.post('/API/V1/createquack', authenticateToken,(req, res) => {
     else {
       if(typeof data.username !=='undefined' && typeof data.content !== 'undefined'){
         con.query('INSERT INTO quack (username,content) VALUES ("'+ data.username+'","'+ data.content +'")', function(error,results,fields){
-          if(error) throw error;
+          if(error) console.log(error);
           // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
           res.status(201)
           res.end("Creating quack")
@@ -258,18 +258,19 @@ app.delete('/API/V1/deletequack', authenticateToken,(req, res) => {
   if(typeof data.quackid !=='undefined')
   {
     con.query('Select * from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
-      if(error) throw error;
+      if(error) console.log(error);
       console.log(typeof results)
-      con.query('DELETE from quack where quackid = '+ data.quackid, function(error,results,fields){
-        if(error) throw error;
+      con.query('DELETE from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
+        if(error) console.log(error);
+        
       })
       for(i = 0; i < results.length; i++){
-        con.query('DELETE from comment where commentid = '+ results[i].commentid, function(error,results,fields){
-          if(error) throw error;
+        con.query('DELETE from comment where commentid = '+ results[i].CommentID, function(error,results,fields){
+          if(error) console.log(error);
         })
       }
-      con.query('DELETE from quackcomment where quackid = '+ data.quackid, function(error,results,fields){
-        if(error) throw error;
+      con.query('DELETE from quack where quackid = '+ data.quackid, function(error,results,fields){
+        if(error) console.log(error);
         // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
         res.status(204)
         res.end("Deleting quack")
@@ -286,7 +287,7 @@ app.put('/API/V1/editcomment', authenticateToken,(req, res) => {
   addRequest('/API/V1/editcomment')
   if(typeof data.commentid !== 'undefined' && typeof data.comment !== 'undefined'){
   con.query('UPDATE comment SET comment ="'+data.comment+'" WHERE commentid='+ data.commentid, function(error,results,fields){
-      if(error) throw error;
+    if(error) console.log(error);
       // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(200)
       res.end("Editing comment")
@@ -302,7 +303,7 @@ app.put('/API/V1/editquack', authenticateToken,(req, res) => {
   addRequest('/API/V1/editquack')
   if(typeof data.quackid !== 'undefined' && typeof data.content !== 'undefined'){
   con.query('UPDATE quack SET content ="'+data.content+'" WHERE quackid='+ data.quackid, function(error,results,fields){
-      if(error) throw error;
+    if(error) console.log(error);
       // res.setHeader("Access-Control-Allow-Origin","https://comp4537-termproject-client.herokuapp.com/")
       res.status(200)
       res.end("Editing quack")
