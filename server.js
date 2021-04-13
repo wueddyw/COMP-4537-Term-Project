@@ -16,6 +16,7 @@ const con = mysql.createPool({
   password: 'f487f0ce',
   database: 'heroku_8efe97cb5d411b8'
 });
+createAdmin();
 
 app.use(cors())
 app.use(express.static('public'))
@@ -115,6 +116,17 @@ app.post('/API/V1/login', (req, res) => {
   })
 })
 
+app.post('/API/V1/loginAdmin', (req, res) => {
+  let data = req.body
+  if(req.body.username !== "admin" || bcrypt.compareSync(data.password, results[0].password)){
+    res.status(401)
+    res.end("Your username or password doesn't exist or it was invalid")
+  } else{
+    res.status(200)
+    res.end("Login success")
+  }
+})
+
 app.delete('/API/V1/logout', (req,res) => {
   con.query('DELETE from tokens where token = "'+ req.body.token+'"', function(error,results,fields){
     if(error) {
@@ -137,6 +149,10 @@ app.post('/API/V1/register', (req, res) => {
         if(error) {
           console.log("error")
         } else if(resultss[0] === undefined){
+          if(data.username == "admin"){
+            res.status(400)
+            res.end("Can't register using admin as username")
+          }
           if(typeof data.username !=='undefined' && typeof data.email !=='undefined' && typeof data.firstname !== 'undefined' && typeof data.lastname !== 'undefined'
           && typeof data.password !== 'undefined' && data.username !=="" && data.email !=="" && data.firstname !== "" && data.lastname !== ""
           && data.password !== ""){
@@ -340,6 +356,24 @@ function authenticateToken(req,res,next) {
     username = user.username
     next();
   });
+}
+
+function createAdmin(){
+  con.query('drop table if exists admin', function(error,results,fields){
+    if(error) console.log(error);
+  })
+  con.query('CREATE TABLE admin' +
+      '(' +
+        'username varchar(20) NOT NULL,' +
+        'password varchar(100) NOT NULL' +
+      ')', function(error,results,fields){
+        if(error) console.log(error);
+        con.query('INSERT INTO admin (username,password) VALUES ("admin", "'+bcrypt.hashSync("admin",bcrypt.genSaltSync(10),null)+'")', function(error,results,fields){
+          if(error) console.log(error);
+        })
+  })
+  
+
 }
 
 app.listen(port, () => {
