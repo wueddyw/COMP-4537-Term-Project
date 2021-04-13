@@ -129,7 +129,10 @@ app.post('/API/V1/loginAdmin', (req, res) => {
         res.end("Your username or password doesn't exist or it was invalid")
       } else{
         res.status(200)
-        res.end("Login success")
+        let password = {
+          status : bcrypt.compareSync(data.password, results[0].password)
+        }
+        res.json(password)
       }
     }
   })
